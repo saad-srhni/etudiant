@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mark Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold mb-4">📝 Mark Attendance for {{ student.first_name }} {{ student.last_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            <label class="block font-semibold mb-1">Select Classroom</label>
+            {{ form.classroom }}
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-semibold mb-1">Status</label>
+            {{ form.status }}
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save Attendance</button>
+        <a href="{% url 'student_list' %}" class="ml-4 text-gray-600 hover:underline">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold text-red-600 mb-4">⚠️ Confirm Deletion</h2>
+    <p>Are you sure you want to delete classroom <strong>{{ classroom.name }}</strong>?</p>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Yes, Delete</button>
+        <a href="{% url 'classroom_list' %}" class="ml-4 text-gray-700 hover:underline">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

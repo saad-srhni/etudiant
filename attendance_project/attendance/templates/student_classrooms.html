@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ student.first_name }}'s Classrooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">🏫 Classrooms of {{ student.first_name }} {{ student.last_name }}</h2>
+    
+    {% if classrooms %}
+    <ul class="space-y-2">
+        {% for classroom in classrooms %}
+        <li class="p-3 bg-gray-100 rounded shadow-sm">
+            <strong>Name:</strong> {{ classroom.name }} <br>
+            <strong>Subject:</strong> {{ classroom.subject }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-gray-600">This student is not assigned to any classroom.</p>
+    {% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'student_list' %}" class="text-blue-600 hover:underline">← Back to Student List</a>
+    </div>
+</div>
+</body>
+</html>

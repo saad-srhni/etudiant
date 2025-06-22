@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ student.first_name }}'s Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-100 p-6">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold mb-4">📋 Attendance of {{ student.first_name }} {{ student.last_name }}</h2>
+
+        <form method="get" class="mb-4 flex gap-4">
+            <input type="date" name="date" value="{{ date_filter }}" class="p-2 border rounded" />
+            <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+            <a href="{% url 'student_attendance_history' student.pk %}"
+                class="bg-gray-400 text-white px-4 py-2 rounded">Reset</a>
+        </form>
+
+        <table class="w-full table-auto border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">📅 Date</th>
+                    <th class="p-2 text-left">🏫 Classroom</th>
+                    <th class="p-2 text-left">✅ Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr class="border-b">
+                    <td class="p-2">{{ record.date }}</td>
+                    <td class="p-2">{{ record.classroom.name }}</td>
+                    <td class="p-2">
+                        {% if record.status == 'present' %}
+                        <span class="text-green-600 font-semibold">Present</span>
+                        {% else %}
+                        <span class="text-red-600 font-semibold">Absent</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-gray-600 p-4">No attendance records found.</td>
+                </tr>
+                {% endfor %}
+                <div class="mt-4" style="justify-content: end;display: flex;margin-bottom: 5px;">
+                    <a href="{% url 'attendance_calendar' student.id %}"
+                        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        📅 View Attendance Calendar
+                    </a>
+                </div>
+            </tbody>
+        </table>
+
+        <div class="mt-6">
+            <a href="{% url 'student_list' %}" class="text-blue-600 hover:underline">← Back to Student List</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Student List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        #loader-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background-color: #3B82F6;
+            /* Tailwind blue-500 */
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+    </style>
+
+</head>
+
+<body class="bg-gray-100 p-6">
+    <div id="loader-bar"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loader = document.getElementById("loader-bar");
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 10; // Simulate loading
+                loader.style.width = `${width}%`;
+                if (width >= 100) {
+                    loader.style.width = `100%`;
+                    setTimeout(() => {
+                        loader.style.display = "none";
+                    }, 300);
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+    </script>
+    {% if user.is_authenticated %}
+    <a href="{% url 'logout' %}" class="text-red-500">Logout</a>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded shadow">
+
+        <h1 class="text-3xl font-bold mb-6">📋 Student Filter</h1>
+
+        <!-- Filter Form -->
+        <form method="get" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+
+            <input type="text" name="first_name" value="{{ request.GET.first_name|default:'' }}"
+                placeholder="First Name" class="p-2 border border-gray-300 rounded" />
+
+            <input type="text" name="last_name" value="{{ request.GET.last_name|default:'' }}" placeholder="Last Name"
+                class="p-2 border border-gray-300 rounded" />
+
+            <input type="text" name="email" value="{{ request.GET.email|default:'' }}" placeholder="Email"
+                class="p-2 border border-gray-300 rounded" />
+
+            <input type="text" name="telephone" value="{{ request.GET.telephone|default:'' }}" placeholder="Telephone"
+                class="p-2 border border-gray-300 rounded" />
+
+            <input type="text" name="roll_number" value="{{ request.GET.roll_number|default:'' }}"
+                placeholder="Roll Number" class="p-2 border border-gray-300 rounded" />
+
+            <!-- <input type="text" name="classroom" value="{{ request.GET.classroom|default:'' }}" placeholder="Classroom"
+                class="p-2 border border-gray-300 rounded" /> -->
+
+            <select name="classroom" class="p-2 border rounded">
+                <option value="">All Classrooms</option>
+                {% for classroom in classrooms %}
+                {% with classroom.id|stringformat:"s" as classroom_id_str %}
+                <option value="{{ classroom.id }}" {% if selected_classroom==classroom_id_str %}selected{% endif %}>
+                    {{ classroom.name }}
+                </option>
+                {% endwith %}
+                {% endfor %}
+            </select>
+
+            <div class="flex items-center space-x-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    Filter
+                </button>
+                <a href="{% url 'student_list' %}"
+                    class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">
+                    Reset
+                </a>
+            </div>
+        </form>
+
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">📋 Student List</h1>
+            <div>
+                <a href="{% url 'create_student' %}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+                    style="margin-right: 3px;">
+                    ➕ Add Student
+                </a>
+                <a href="{% url 'classroom_list' %}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow">
+                    Class Room
+                </a>
+                <a href="{% url 'export_attendance_pdf' %}?classroom={{ selected_classroom }}&start_date={{ start_date }}&end_date={{ end_date }}"
+                    class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2">
+                    📥 Export PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Student Table -->
+        <table class="w-full table-auto border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">First Name</th>
+                    <th class="p-2 text-left">Last Name</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Telephone</th>
+                    <th class="p-2 text-left">Roll Number</th>
+                    <th class="p-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in page_obj %}
+                <tr class="border-b">
+                    <td class="p-2">{{ student.first_name }}</td>
+                    <td class="p-2">{{ student.last_name }}</td>
+                    <td class="p-2">{{ student.email }}</td>
+                    <td class="p-2">{{ student.telephone }}</td>
+                    <td class="p-2">{{ student.roll_number }}</td>
+                    <td class="p-2 space-x-2">
+                        <a href="{% url 'update_student' student.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'delete_student' student.pk %}" class="text-red-600 hover:underline">Delete</a>
+                        <a href="{% url 'view_student_classrooms' student.pk %}"
+                            class="text-green-600 hover:underline">View Classrooms</a>
+                        <a href="{% url 'student_attendance_history' student.pk %}"
+                            class="text-purple-600 hover:underline">View Attendance</a>
+                        <a href="{% url 'mark_attendance_for_student' student.pk %}"
+                            class="text-blue-600 hover:underline">Mark Attendance</a>
+
+                    </td>
+
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="p-2 text-center">No students found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="mt-6 flex justify-between items-center">
+            <span class="text-gray-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+            <div class="space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                    class="px-3 py-1 bg-gray-200 rounded">Previous</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                    class="px-3 py-1 bg-gray-200 rounded">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

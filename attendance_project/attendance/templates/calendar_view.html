@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold mb-4">📅 Attendance for {{ student.first_name }} - {{ month_name }} {{ year }}</h2>
+
+        <div class="grid grid-cols-7 gap-4 text-center">
+            {% for day in "SMTWTFS" %}
+                <div class="font-bold text-gray-700">{{ day }}</div>
+            {% endfor %}
+
+            {% for day in calendar_data %}
+                {% if forloop.first %}
+                    {% for _ in day.date.weekday|add:"1"|make_list %}
+                        <div></div>
+                    {% endfor %}
+                {% endif %}
+                <div class="p-2 rounded 
+                    {% if day.status == 'present' %}bg-green-200
+                    {% elif day.status == 'absent' %}bg-red-200
+                    {% else %}bg-gray-200{% endif %}">
+                    <span class="block font-semibold">{{ day.date.day }}</span>
+                    <span class="text-xs text-gray-700">
+                        {% if day.status == 'present' %}✅
+                        {% elif day.status == 'absent' %}❌
+                        {% else %}-{% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-6 flex justify-between">
+            <a href="{% url 'attendance_calendar_month' student.id year month|add:"-1" %}" class="text-blue-600 hover:underline">⬅️ Previous</a>
+            <a href="{% url 'attendance_calendar_month' student.id year month|add:"1" %}" class="text-blue-600 hover:underline">Next ➡️</a>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'student_list' %}" class="text-sm text-blue-600 hover:underline">← Back to students</a>
+        </div>
+    </div>
+</body>
+</html>

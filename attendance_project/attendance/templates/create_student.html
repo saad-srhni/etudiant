@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">➕ Create Student</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="mb-4">
+                <label class="block font-semibold mb-1">{{ field.label_tag }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <div class="text-red-600 mb-4">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
+        <a href="{% url 'student_list' %}" class="ml-2 text-blue-600">Back</a>
+    </form>
+</div>
+</body>
+</html>
