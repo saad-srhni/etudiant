@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: attendance-app
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn attendance_project.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: attendance_project.settings
